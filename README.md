@@ -16,7 +16,7 @@ Put the soundboard image here:
 public/images/soundboard.jpg
 ```
 
-It is already included and every tap area is measured to match it. The app reads the image size by itself. Until the file is there, the
+It is already included and every tap area is measured to match it. The app reads the image size by itself. If the file is ever missing, the
 board shows simple colored placeholder buttons.
 
 > Tip: for faster loading on phones, keep the file under ~600 KB (for example, export it
