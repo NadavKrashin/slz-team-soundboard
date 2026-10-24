@@ -1,7 +1,6 @@
 :root {
   --navy: #0d1733; /* the team shirts */
   --ink: #ffffff;
-  --hint: #ffffff;
   --ar: 0.6667; /* artwork width / height – updated from the real image */
   --release: 520ms; /* keep in sync with RELEASE_MS in effects.ts */
   --font-display: 'Rubik', system-ui, sans-serif;
@@ -61,7 +60,7 @@ body {
 
 .header {
   flex: none;
-  padding-top: 4px;
+  padding: 4px 0 6px;
   text-align: center;
 }
 
@@ -78,38 +77,6 @@ body {
     0 4px 18px rgba(0, 0, 0, 0.45);
 }
 
-/* ── first-visit hint ───────────────────────────────────── */
-
-.hint {
-  flex: none;
-  align-self: center;
-  margin: 6px 0 8px;
-  padding: 4px 14px;
-  border-radius: 999px;
-  background: rgba(13, 23, 51, 0.55);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
-  text-align: center;
-  font-size: clamp(13px, 3.7vw, 15px);
-  line-height: 1.4;
-  color: var(--hint);
-  transition:
-    opacity 0.45s ease,
-    transform 0.45s ease;
-  animation: hint-bob 1.8s ease-in-out infinite;
-}
-
-.hint--hidden {
-  opacity: 0;
-  transform: translateY(-4px);
-  animation: none;
-}
-
-@keyframes hint-bob {
-  50% {
-    transform: translateY(2px);
-  }
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
@@ -120,10 +87,4 @@ body {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hint {
-    animation: none;
-  }
 }

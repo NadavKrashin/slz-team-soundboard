@@ -59,7 +59,7 @@
 
 .stage__missing code {
   font-size: 12px;
-  color: var(--hint);
+  color: #ffe9a8;
 }
 
 /* ── ?debug calibration overlay ─────────────────────────── */

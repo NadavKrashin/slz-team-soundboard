@@ -29,7 +29,6 @@ interface Props {
   person: Person;
   index: number;
   imageUrl: string;
-  onPress: () => void;
 }
 
 /** Position + art alignment for one person, all as CSS custom properties. */
@@ -98,7 +97,7 @@ function useAudioLevels(ref: RefObject<HTMLElement | null>, playing: boolean) {
   }, [ref, playing]);
 }
 
-export const PersonButton = memo(function PersonButton({ person, index, imageUrl, onPress }: Props) {
+export const PersonButton = memo(function PersonButton({ person, index, imageUrl }: Props) {
   const phase = usePlayback((s) => (s.activeId === person.id ? s.phase : 'idle'));
   const active = phase === 'loading' || phase === 'playing';
   const notice = phase === 'missing' || phase === 'error' ? NOTICE_TEXT[phase] : null;
@@ -126,7 +125,6 @@ export const PersonButton = memo(function PersonButton({ person, index, imageUrl
       flash: flashRef.current!,
       burst: burstRef.current!,
     });
-    onPress();
   };
 
   // React on finger-down (not on release) so the press feels instant.

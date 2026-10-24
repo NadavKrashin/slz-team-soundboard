@@ -9,7 +9,7 @@ type ImageStatus = 'loading' | 'ready' | 'error';
 const INTRO_MS = 80 * resolvedPeople.length + 700;
 
 /** The artwork with all twelve tappable people on top of it. */
-export const Stage = memo(function Stage({ onPress }: { onPress: () => void }) {
+export const Stage = memo(function Stage() {
   const stageRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [status, setStatus] = useState<ImageStatus>('loading');
@@ -76,7 +76,7 @@ export const Stage = memo(function Stage({ onPress }: { onPress: () => void }) {
         </p>
       )}
       {resolvedPeople.map((person, i) => (
-        <PersonButton key={person.id} person={person} index={i} imageUrl={imageUrl} onPress={onPress} />
+        <PersonButton key={person.id} person={person} index={i} imageUrl={imageUrl} />
       ))}
       {debug && <DebugOverlay stageRef={stageRef} />}
     </div>
