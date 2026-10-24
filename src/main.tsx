@@ -1,9 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource/secular-one/hebrew-400.css';
-import '@fontsource/secular-one/latin-400.css';
 import '@fontsource/rubik/hebrew-500.css';
 import '@fontsource/rubik/latin-500.css';
+import '@fontsource/rubik/hebrew-800.css';
+import '@fontsource/rubik/latin-800.css';
 import './styles/base.css';
 import './styles/stage.css';
 import './styles/person.css';

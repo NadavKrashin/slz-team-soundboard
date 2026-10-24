@@ -1,4 +1,4 @@
-# הסאונדבורד – Team Soundboard
+# החד״ס רועש מדי – Team Soundboard
 
 A mobile-first cartoon soundboard in Hebrew. Tap a character: their arcade button
 sinks, glows and sends out sound waves, and their recording plays.

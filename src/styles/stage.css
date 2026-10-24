@@ -20,33 +20,10 @@
   width: min(100%, calc((100dvh - 110px) * var(--ar)));
   width: min(100cqw, calc(100cqh * var(--ar)));
   border-radius: 18px;
-  background: #1d2b55;
+  background: radial-gradient(70% 50% at 50% 50%, #2a3f78, #172447);
   box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.9),
-    0 0 0 7px rgba(18, 8, 44, 0.9),
-    0 0 26px 8px rgba(255, 95, 162, 0.35),
-    0 18px 40px rgba(0, 0, 0, 0.55);
-}
-
-/* Rainbow arcade bezel. */
-.stage::before {
-  content: '';
-  position: absolute;
-  inset: -7px;
-  z-index: -1;
-  border-radius: 24px;
-  background: conic-gradient(
-    from 200deg,
-    #ff8c00,
-    #ff4040,
-    #ff5fa2,
-    #a855f7,
-    #2f80ed,
-    #17c3d6,
-    #3ddc5a,
-    #ffd60a,
-    #ff8c00
-  );
+    0 0 0 3px rgba(255, 255, 255, 0.92),
+    0 14px 40px rgba(0, 0, 0, 0.55);
 }
 
 .stage__img {
@@ -64,15 +41,6 @@
   visibility: hidden;
 }
 
-/* Plain board behind the placeholder buttons (covers the rainbow bezel). */
-.stage--error::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: 18px;
-  background: radial-gradient(70% 50% at 50% 50%, #2a3f78, #172447);
-}
 
 .stage__missing {
   position: absolute;
