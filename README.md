@@ -30,13 +30,13 @@ recordings in it as you like:
 
 ```
 sounds/
-  person-01/
+  person-01-הודי/
     hello.mp3
     laugh.mp3
     goal.m4a
-  person-02/
+  person-02-יניב/
     …
-  person-12/
+  person-12-גוש/
 ```
 
 - **Any file names work.** Each tap plays a random clip from that person's folder.
@@ -51,14 +51,15 @@ sounds/
 On GitHub, open a person's folder and use **Add file → Upload files**.
 
 The folder numbers follow the board: left → right, top → bottom (1–3 on the top row,
-10–12 on the bottom row).
+10–12 on the bottom row). The name after the number is only there to help you; the
+app goes by the number.
 
 ## 3. Names and colors
 
 Everything else about the people lives in **`src/config/people.ts`**:
 
 ```ts
-{ id: 1, name: 'דמות 1', color: '#FF7A00', row: 0, column: 0, … },
+{ id: 1, name: 'הודי', color: '#FF7A00', row: 0, column: 0, … },
 ```
 
 | Field    | What it does                                                        |
@@ -67,7 +68,7 @@ Everything else about the people lives in **`src/config/people.ts`**:
 | `color`  | Color of their arcade button. Used for the glow and waves.          |
 | `row`, `column` | Their spot in the 3 × 4 grid (0-based).                      |
 
-The `id` connects a person to their recordings folder: `id: 1` → `sounds/person-01/`.
+The `id` connects a person to their recordings folder: `id: 1` → `sounds/person-01-הודי/`.
 
 ## 4. Line up the tappable areas
 

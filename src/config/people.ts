@@ -4,7 +4,7 @@
  * - name:  read out by screen readers.
  * - color: the color of this person's arcade button (used for the glow).
  *
- * Recordings don't go here: put them in `sounds/person-01/`, `sounds/person-02/`…
+ * Recordings don't go here: put them in `sounds/person-01-הודי/`, `sounds/person-02-יניב/`…
  * (any number per person – each tap plays a random one). A person with no
  * recordings shows a friendly "coming soon" bubble.
  *
@@ -24,7 +24,7 @@ export const people: PersonConfig[] = [
   // ── Row 1 ────────────────────────────────────────────────
   {
     id: 1,
-    name: 'דמות 1',
+    name: 'הודי',
     color: '#FF7A00',
     row: 0,
     column: 0,
@@ -35,7 +35,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 2,
-    name: 'דמות 2',
+    name: 'יניב',
     color: '#1F6BFF',
     row: 0,
     column: 1,
@@ -46,7 +46,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 3,
-    name: 'דמות 3',
+    name: 'שמש',
     color: '#FF2A2A',
     row: 0,
     column: 2,
@@ -58,7 +58,7 @@ export const people: PersonConfig[] = [
   // ── Row 2 ────────────────────────────────────────────────
   {
     id: 4,
-    name: 'דמות 4',
+    name: 'שירה',
     color: '#FFD000',
     row: 1,
     column: 0,
@@ -69,7 +69,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 5,
-    name: 'דמות 5',
+    name: 'קומפי',
     color: '#22D140',
     row: 1,
     column: 1,
@@ -80,7 +80,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 6,
-    name: 'דמות 6',
+    name: 'נחום',
     color: '#FF2D95',
     row: 1,
     column: 2,
@@ -92,7 +92,7 @@ export const people: PersonConfig[] = [
   // ── Row 3 ────────────────────────────────────────────────
   {
     id: 7,
-    name: 'דמות 7',
+    name: 'לנקרי',
     color: '#8B3DFF',
     row: 2,
     column: 0,
@@ -103,7 +103,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 8,
-    name: 'דמות 8',
+    name: 'הילה',
     color: '#1EA7FF',
     row: 2,
     column: 1,
@@ -114,7 +114,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 9,
-    name: 'דמות 9',
+    name: 'זקרי',
     color: '#1FCB4A',
     row: 2,
     column: 2,
@@ -126,7 +126,7 @@ export const people: PersonConfig[] = [
   // ── Row 4 ────────────────────────────────────────────────
   {
     id: 10,
-    name: 'דמות 10',
+    name: 'שבור',
     color: '#FF2233',
     row: 3,
     column: 0,
@@ -137,7 +137,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 11,
-    name: 'דמות 11',
+    name: 'קרשין',
     color: '#FFD000',
     row: 3,
     column: 1,
@@ -148,7 +148,7 @@ export const people: PersonConfig[] = [
   },
   {
     id: 12,
-    name: 'דמות 12',
+    name: 'גוש',
     color: '#A24BFF',
     row: 3,
     column: 2,
