@@ -1,0 +1,142 @@
+/* The stage keeps the artwork's exact aspect ratio and fits it into the
+   space left under the header – never cropped, never stretched. */
+
+.stage-area {
+  /* As tall as the full-width board would be, shrinking when space runs out. */
+  flex: 0 1 calc((100vw - 28px) / var(--ar));
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  container-type: size;
+}
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  direction: ltr;
+  aspect-ratio: var(--ar);
+  /* Fallback for browsers without container units. */
+  width: min(100%, calc((100dvh - 110px) * var(--ar)));
+  width: min(100cqw, calc(100cqh * var(--ar)));
+  border-radius: 18px;
+  background: #1d2b55;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.9),
+    0 0 0 7px rgba(18, 8, 44, 0.9),
+    0 0 26px 8px rgba(255, 95, 162, 0.35),
+    0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Rainbow arcade bezel. */
+.stage::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  z-index: -1;
+  border-radius: 24px;
+  background: conic-gradient(
+    from 200deg,
+    #ff8c00,
+    #ff4040,
+    #ff5fa2,
+    #a855f7,
+    #2f80ed,
+    #17c3d6,
+    #3ddc5a,
+    #ffd60a,
+    #ff8c00
+  );
+}
+
+.stage__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.stage--error .stage__img {
+  visibility: hidden;
+}
+
+/* Plain board behind the placeholder buttons (covers the rainbow bezel). */
+.stage--error::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 18px;
+  background: radial-gradient(70% 50% at 50% 50%, #2a3f78, #172447);
+}
+
+.stage__missing {
+  position: absolute;
+  inset: 5% 8% auto; /* over the empty face area of the first row */
+  z-index: 0;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: rgba(10, 5, 30, 0.85);
+  direction: rtl;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.stage__missing code {
+  font-size: 12px;
+  color: var(--hint);
+}
+
+/* ── ?debug calibration overlay ─────────────────────────── */
+
+.debug__region {
+  position: absolute;
+  z-index: 10;
+  outline: 2px dashed rgba(255, 255, 255, 0.9);
+  outline-offset: -1px;
+  background: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+}
+
+.debug__label {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: #000;
+  font: 700 12px/1.4 monospace;
+}
+
+.debug__button {
+  position: absolute;
+  border: 2px solid #0ff;
+  border-radius: 50%;
+}
+
+.debug__head {
+  position: absolute;
+  aspect-ratio: 1;
+  border: 2px solid #ff0;
+  border-radius: 50%;
+  translate: -50% -50%;
+}
+
+.debug__readout {
+  position: fixed;
+  left: 8px;
+  bottom: max(env(safe-area-inset-bottom), 8px);
+  z-index: 20;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #000;
+  font: 700 13px/1.4 monospace;
+  pointer-events: none;
+}

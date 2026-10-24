@@ -1,0 +1,407 @@
+/*
+ * One person = one transparent <button> over its spot on the artwork.
+ *
+ * Layers (bottom → top):
+ *   .person__body      held-down position while talking (+ springy release)
+ *     .person__squash  one-shot "boing" on every tap (Web Animations API)
+ *       .person__talk  tiny audio-reactive bob
+ *         .person__clone  an exact, pixel-aligned copy of this person's
+ *                          piece of the artwork – this is what moves
+ *         .person__flash  quick highlight on tap
+ *         .person__ring   glowing ring around the arcade button
+ *   .person__ripples / .person__burst / .waves / .eq / .person__bubble
+ *
+ * At rest the clone is hidden, so you always see the untouched artwork.
+ */
+
+.person {
+  position: absolute;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 16%;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  touch-action: none; /* taps never start a scroll or zoom */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.person[data-live],
+.person.is-active {
+  z-index: 3;
+}
+
+.person__body,
+.person__squash,
+.person__talk {
+  position: absolute;
+  inset: 0;
+  /* Everything squashes toward the bottom of the arcade button. */
+  transform-origin: var(--bx) var(--b-bottom);
+  pointer-events: none;
+}
+
+/* Release: spring back up with a little overshoot. */
+.person__body {
+  transition: transform var(--release) cubic-bezier(0.3, 1.9, 0.45, 1);
+}
+
+/* Held down while the sound plays. */
+.person.is-active .person__body {
+  transform: translateY(1.6%) scale(0.99);
+  transition: transform 90ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.person.is-playing .person__talk {
+  transform: scale(calc(1 + var(--lvl, 0) * 0.03));
+}
+
+/* ── the moving copy of the artwork ─────────────────────── */
+
+.person__art {
+  position: absolute;
+  inset: calc(var(--bleed) * -1);
+  pointer-events: none;
+  /* Soft edges, so the copy melts into the artwork with no visible seam. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
+    linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
+    linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  mask-composite: intersect;
+}
+
+.person__clone {
+  opacity: 0;
+  background-image: var(--art);
+  background-size: var(--art-size);
+  background-position: var(--art-pos);
+  background-repeat: no-repeat;
+}
+
+.person[data-live] .person__clone,
+.person.is-active .person__clone,
+.stage--intro .person__clone {
+  opacity: 1;
+}
+
+.stage--error .person__clone {
+  display: none;
+}
+
+.person__flash {
+  opacity: 0;
+  background:
+    radial-gradient(42% 46% at var(--hx) 44%, rgba(255, 255, 255, 0.9), transparent 75%),
+    radial-gradient(55% 40% at var(--bx) 78%, color-mix(in srgb, var(--c) 70%, #fff), transparent 80%);
+  mix-blend-mode: overlay;
+}
+
+/* ── glowing arcade-button ring ─────────────────────────── */
+
+.person__ring {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  width: calc(var(--brx) * 2);
+  height: calc(var(--bry) * 2);
+  translate: -50% -50%;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--c),
+    0 0 14px 5px var(--c),
+    inset 0 5px 10px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.3s ease;
+}
+
+/* Soft light spilling off the button – its strength follows the voice. */
+.person__ring::after {
+  content: '';
+  position: absolute;
+  inset: -16% -8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--c), transparent);
+  mix-blend-mode: screen;
+  opacity: calc(0.25 + var(--lvl, 0.25) * 0.6);
+}
+
+.person.is-active .person__ring {
+  opacity: 1;
+  animation: ring-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes ring-pulse {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.05;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .person:hover:not(.is-active) .person__ring {
+    opacity: 0.55;
+  }
+}
+
+/* ── ripples + tap burst ────────────────────────────────── */
+
+.person__ripples span,
+.person__burst {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  width: calc(var(--brx) * 2);
+  height: calc(var(--bry) * 2);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.person__ripples span {
+  translate: -50% -50%;
+  border: 2px solid var(--c);
+  box-shadow: 0 0 8px var(--c);
+  opacity: 0;
+  animation: ripple 1.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.person__ripples span:nth-child(2) {
+  animation-delay: 0.7s;
+}
+
+@keyframes ripple {
+  from {
+    scale: 1;
+    opacity: 0.9;
+  }
+  to {
+    scale: 1.55;
+    opacity: 0;
+  }
+}
+
+.person__burst {
+  transform: translate(-50%, -50%);
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 3px var(--c),
+    0 0 18px var(--c);
+  opacity: 0;
+}
+
+/* ── comic sound waves beside the face ──────────────────── */
+
+.waves {
+  position: absolute;
+  left: var(--hx);
+  top: var(--hy);
+  width: calc(var(--hr) * 4.8);
+  height: auto;
+  aspect-ratio: 240 / 100;
+  translate: -50% -50%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.waves__outline,
+.waves__line {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.waves__outline {
+  stroke: #fff;
+  stroke-width: 12;
+}
+
+.waves__line {
+  stroke: var(--c);
+  stroke-width: 6;
+}
+
+.waves__arc {
+  opacity: 0;
+  animation: wave 0.9s ease-out infinite;
+}
+
+@keyframes wave {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+
+/* ── equalizer on the button ────────────────────────────── */
+
+.eq {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  translate: -50% -35%;
+  display: flex;
+  align-items: flex-end;
+  gap: 6%;
+  width: 27%;
+  height: 13%;
+  padding: 2.2% 5%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 78%, #000);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 3px 8px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.eq__bar {
+  flex: 1;
+  height: 100%;
+  border-radius: 2px;
+  background: #fff;
+  transform-origin: bottom;
+  transform: scaleY(clamp(0.22, calc(0.22 + var(--v, 0) * 1.1), 1));
+}
+
+/* ── "coming soon" / error bubble ───────────────────────── */
+
+.person__bubble {
+  position: absolute;
+  left: var(--hx);
+  top: 6%;
+  z-index: 2;
+  translate: -50% -55%;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: #1b0f40;
+  border: 2px solid var(--c);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  direction: rtl;
+  white-space: nowrap;
+  font-size: clamp(11px, 3.3vw, 14px);
+  line-height: 1.3;
+  pointer-events: none;
+  animation: bubble-pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+@keyframes bubble-pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+/* ── keyboard focus ─────────────────────────────────────── */
+
+.person:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: 3%;
+  border-radius: 16%;
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 3px var(--c),
+    0 0 16px var(--c);
+  pointer-events: none;
+}
+
+/* ── no artwork yet: simple colored arcade buttons ──────── */
+
+.person__placeholder {
+  display: none;
+}
+
+.stage--error .person__placeholder {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  display: grid;
+  place-items: center;
+  width: calc(var(--brx) * 2);
+  height: calc(var(--bry) * 2);
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(60% 60% at 40% 35%, color-mix(in srgb, var(--c) 55%, #fff), var(--c));
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 55%, #000);
+  font: 700 clamp(12px, 4vw, 18px) / 1 var(--font-display);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ── first-load "attract mode" wave across the board ────── */
+
+.stage--intro .person__squash {
+  animation: intro-bop 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 80ms + 150ms);
+}
+
+.stage--intro .person__ring {
+  animation: intro-ring 0.6s ease-out both;
+  animation-delay: calc(var(--i) * 80ms + 150ms);
+}
+
+@keyframes intro-bop {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: translateY(3%) scale(1.03, 0.94);
+  }
+  55% {
+    transform: translateY(-1.5%) scale(0.99, 1.02);
+  }
+}
+
+@keyframes intro-ring {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+}
+
+/* ── reduced motion: keep the glow, drop the movement ───── */
+
+@media (prefers-reduced-motion: reduce) {
+  .person__body,
+  .person.is-active .person__body {
+    transition: none;
+    transform: none;
+  }
+  .person.is-active .person__ring,
+  .waves__arc,
+  .person__bubble {
+    animation: none;
+  }
+  .waves__arc {
+    opacity: 1;
+  }
+  .person__ripples {
+    display: none;
+  }
+  .eq__bar {
+    transform: scaleY(0.6);
+  }
+  .eq__bar:nth-child(even) {
+    transform: scaleY(0.9);
+  }
+}
