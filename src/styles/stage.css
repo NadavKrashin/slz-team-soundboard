@@ -129,6 +129,13 @@
   translate: -50% -50%;
 }
 
+.debug__waves {
+  position: absolute;
+  aspect-ratio: 60 / 64;
+  border: 2px solid #f0f;
+  translate: -50% -50%;
+}
+
 .debug__readout {
   position: fixed;
   left: 8px;

@@ -12,8 +12,13 @@ import type { Person } from '../config/types';
 import { playPressEffects, reducedMotion, RELEASE_MS, showClone } from './effects';
 import { Equalizer, SoundWaves } from './PersonEffects';
 
-/** How far the copied artwork reaches past the tappable area (% of region). */
+/**
+ * How far the copied artwork reaches past the tappable area, in % of the
+ * region. The bottom grows when the arcade button sticks out below it.
+ */
 const BLEED = 5;
+/** Width of the soft edge, in % of the region. */
+const FEATHER = 8;
 
 const NOTICE_TEXT = {
   missing: 'הקול בדרך… 🎙️',
@@ -28,14 +33,15 @@ interface Props {
 }
 
 /** Position + art alignment for one person, all as CSS custom properties. */
-function personStyle({ region: r, button: b, head: h, color }: Person, index: number, imageUrl: string) {
+function personStyle({ region: r, button: b, head: h, waves: w, color }: Person, index: number, imageUrl: string) {
   // The clone box = region + bleed on every side, in % of the image.
-  const bx = (r.w * BLEED) / 100;
-  const by = (r.h * BLEED) / 100;
-  const X = r.x - bx;
-  const Y = r.y - by;
-  const W = r.w + 2 * bx;
-  const H = r.h + 2 * by;
+  const bottom = Math.max(BLEED, b.cy + b.ry - 100 + FEATHER + 2);
+  const boxH = 100 + BLEED + bottom; // in % of region height
+  const boxW = 100 + 2 * BLEED; // in % of region width
+  const X = r.x - (r.w * BLEED) / 100;
+  const Y = r.y - (r.h * BLEED) / 100;
+  const W = (r.w * boxW) / 100;
+  const H = (r.h * boxH) / 100;
   return {
     left: `${r.x}%`,
     top: `${r.y}%`,
@@ -44,6 +50,10 @@ function personStyle({ region: r, button: b, head: h, color }: Person, index: nu
     '--c': color,
     '--i': index,
     '--bleed': `${BLEED}%`,
+    '--bleed-bottom': `${bottom}%`,
+    '--fx': `${(FEATHER / boxW) * 100}%`,
+    '--ft': `${(FEATHER / boxH) * 100}%`,
+    '--fb': `${((boxH - FEATHER) / boxH) * 100}%`,
     '--art': `url("${imageUrl}")`,
     '--art-size': `${(100 * 100) / W}% ${(100 * 100) / H}%`,
     '--art-pos': `${(X / (100 - W)) * 100}% ${(Y / (100 - H)) * 100}%`,
@@ -55,6 +65,11 @@ function personStyle({ region: r, button: b, head: h, color }: Person, index: nu
     '--hx': `${h.cx}%`,
     '--hy': `${h.cy}%`,
     '--hr': `${h.r}%`,
+    '--wlx': `${w.lx}%`,
+    '--wly': `${w.ly}%`,
+    '--wrx': `${w.rx}%`,
+    '--wry': `${w.ry}%`,
+    '--wsize': `${w.size}%`,
   } as CSSProperties;
 }
 
@@ -153,9 +168,9 @@ export const PersonButton = memo(function PersonButton({ person, index, imageUrl
             <span className="person__ring" />
           </span>
         </span>
+        {active && <SoundWaves />}
       </span>
       <span className="person__burst" ref={burstRef} aria-hidden="true" />
-      {active && <SoundWaves />}
       {active && <Equalizer />}
       {notice && (
         <span className="person__bubble" aria-hidden="true">

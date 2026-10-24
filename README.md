@@ -16,11 +16,11 @@ Put the soundboard image here:
 public/images/soundboard.jpg
 ```
 
-That's all. The app reads the image size by itself. Until the file is there, the
+It is already included and every tap area is measured to match it. The app reads the image size by itself. Until the file is there, the
 board shows simple colored placeholder buttons.
 
 > Tip: for faster loading on phones, keep the file under ~600 KB (for example, export it
-> as a JPG at quality 80, about 1200 px wide). If the image is not 1024 × 1536, also update
+> as a JPG at quality 80, about 1200 px wide). If you replace the image with one of a different size (currently 1086 × 1448), also update
 > `width`/`height` in `src/config/layout.ts`. This only prevents a jump while the image loads.
 
 ## 2. Add the recordings
@@ -66,7 +66,8 @@ Open the site with **`?debug`** at the end of the address, for example
 
 - a dashed box for each person's tappable area,
 - a cyan ellipse for their arcade button (where the glow goes),
-- a yellow circle for their face (where the sound waves go),
+- a yellow circle for their face,
+- magenta boxes for the sound-wave marks beside the face (these pulse while the person talks),
 - the exact `x`/`y` percentage under your finger or mouse, in the bottom corner.
 
 All positions are **percentages of the image**, so they stay aligned on every screen size.

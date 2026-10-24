@@ -28,6 +28,18 @@ export interface HeadShape {
   r: number;
 }
 
+/** Where the sound-wave marks beside the face are, in percent of the region. */
+export interface WavesShape {
+  /** Left marks center, % of region width / height. */
+  lx: number;
+  ly: number;
+  /** Right marks center, % of region width / height. */
+  rx: number;
+  ry: number;
+  /** Width of one group of marks, % of region width. */
+  size: number;
+}
+
 export interface PersonConfig {
   id: number;
   name: string;
@@ -39,12 +51,14 @@ export interface PersonConfig {
   region?: Partial<Region>;
   button?: Partial<ButtonShape>;
   head?: Partial<HeadShape>;
+  waves?: Partial<WavesShape>;
 }
 
 export interface Person extends PersonConfig {
   region: Region;
   button: ButtonShape;
   head: HeadShape;
+  waves: WavesShape;
   /** Fully resolved URL (respects the GitHub Pages sub-path). */
   soundUrl: string | null;
 }

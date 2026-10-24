@@ -65,16 +65,16 @@
 
 .person__art {
   position: absolute;
-  inset: calc(var(--bleed) * -1);
+  inset: calc(var(--bleed) * -1) calc(var(--bleed) * -1) calc(var(--bleed-bottom) * -1);
   pointer-events: none;
   /* Soft edges, so the copy melts into the artwork with no visible seam. */
   -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
-    linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+    linear-gradient(to right, transparent, #000 var(--fx), #000 calc(100% - var(--fx)), transparent),
+    linear-gradient(to bottom, transparent, #000 var(--ft), #000 var(--fb), transparent);
   -webkit-mask-composite: source-in;
   mask-image:
-    linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
-    linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+    linear-gradient(to right, transparent, #000 var(--fx), #000 calc(100% - var(--fx)), transparent),
+    linear-gradient(to bottom, transparent, #000 var(--ft), #000 var(--fb), transparent);
   mask-composite: intersect;
 }
 
@@ -203,14 +203,23 @@
 
 .waves {
   position: absolute;
-  left: var(--hx);
-  top: var(--hy);
-  width: calc(var(--hr) * 4.8);
+  width: var(--wsize);
   height: auto;
-  aspect-ratio: 240 / 100;
+  aspect-ratio: 60 / 64;
   translate: -50% -50%;
   overflow: visible;
   pointer-events: none;
+}
+
+.waves--left {
+  left: var(--wlx);
+  top: var(--wly);
+  scale: -1 1; /* mirror: "((" */
+}
+
+.waves--right {
+  left: var(--wrx);
+  top: var(--wry);
 }
 
 .waves__outline,
@@ -221,12 +230,12 @@
 
 .waves__outline {
   stroke: #fff;
-  stroke-width: 12;
+  stroke-width: 10;
 }
 
 .waves__line {
   stroke: var(--c);
-  stroke-width: 6;
+  stroke-width: 5.5;
 }
 
 .waves__arc {
@@ -237,14 +246,14 @@
 @keyframes wave {
   0% {
     opacity: 0;
-    transform: translateX(-6px);
+    transform: translateX(-3px);
   }
   30% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translateX(10px);
+    transform: translateX(6px);
   }
 }
 
@@ -283,9 +292,9 @@
 .person__bubble {
   position: absolute;
   left: var(--hx);
-  top: 6%;
+  top: 0;
   z-index: 2;
-  translate: -50% -55%;
+  translate: -50% -75%;
   padding: 4px 10px;
   border-radius: 999px;
   background: #fff;

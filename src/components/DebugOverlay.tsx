@@ -28,7 +28,7 @@ export function DebugOverlay({ stageRef }: { stageRef: RefObject<HTMLElement | n
 
   return (
     <>
-      {resolvedPeople.map(({ id, region: r, button: b, head: h }) => (
+      {resolvedPeople.map(({ id, region: r, button: b, head: h, waves: w }) => (
         <div
           key={id}
           className="debug__region"
@@ -48,6 +48,12 @@ export function DebugOverlay({ stageRef }: { stageRef: RefObject<HTMLElement | n
             className="debug__head"
             style={{ left: `${h.cx}%`, top: `${h.cy}%`, width: `${h.r * 2}%` }}
           />
+          {[
+            [w.lx, w.ly],
+            [w.rx, w.ry],
+          ].map(([x, y]) => (
+            <span key={x} className="debug__waves" style={{ left: `${x}%`, top: `${y}%`, width: `${w.size}%` }} />
+          ))}
         </div>
       ))}
       <output className="debug__readout" dir="ltr">

@@ -1,26 +1,26 @@
 /** Decorative layers shown while a person is talking. */
 import type { CSSProperties } from 'react';
 
-/** Comic-style "((  ))" sound waves on both sides of the face. */
+const ARCS = ['M-18 -12 Q-10 0 -18 12', 'M-4 -19 Q8 0 -4 19', 'M10 -26 Q26 0 10 26'];
+
+/**
+ * Animated "))" marks drawn right on top of the artwork's own sound-wave
+ * marks, so the printed waves appear to pulse while the person talks.
+ */
 export function SoundWaves() {
-  const arcs = [
-    'M58 -20 Q70 0 58 20',
-    'M74 -32 Q92 0 74 32',
-    'M90 -44 Q114 0 90 44',
-  ];
   return (
-    <svg className="waves" viewBox="-120 -50 240 100" aria-hidden="true">
-      {[1, -1].map((side) => (
-        <g key={side} transform={`scale(${side} 1)`}>
-          {arcs.map((d, i) => (
+    <>
+      {(['left', 'right'] as const).map((side) => (
+        <svg key={side} className={`waves waves--${side}`} viewBox="-30 -32 60 64" aria-hidden="true">
+          {ARCS.map((d, i) => (
             <g key={d} className="waves__arc" style={{ animationDelay: `${i * 120}ms` }}>
               <path d={d} className="waves__outline" />
               <path d={d} className="waves__line" />
             </g>
           ))}
-        </g>
+        </svg>
       ))}
-    </svg>
+    </>
   );
 }
 
