@@ -43,8 +43,6 @@ export interface WavesShape {
 export interface PersonConfig {
   id: number;
   name: string;
-  /** Path relative to `public/`, e.g. "sounds/person-01.mp3". `null` = coming soon. */
-  sound: string | null;
   color: string;
   row: number;
   column: number;
@@ -59,6 +57,6 @@ export interface Person extends PersonConfig {
   button: ButtonShape;
   head: HeadShape;
   waves: WavesShape;
-  /** Fully resolved URL (respects the GitHub Pages sub-path). */
-  soundUrl: string | null;
+  /** Every recording found for this person in `sounds/` (empty = coming soon). */
+  soundUrls: string[];
 }

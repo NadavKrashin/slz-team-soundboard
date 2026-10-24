@@ -5,6 +5,7 @@
  * artwork at every screen size. Open the site with `?debug` to see them.
  */
 import { people } from './people';
+import { soundsFor } from './sounds';
 import type { ButtonShape, HeadShape, Person, Region } from './types';
 
 export const IMAGE = {
@@ -63,6 +64,6 @@ export const resolvedPeople: Person[] = people.map((p) => {
       size: 20,
       ...p.waves,
     },
-    soundUrl: p.sound ? withBase(p.sound) : null,
+    soundUrls: soundsFor(p.id),
   };
 });

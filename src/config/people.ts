@@ -1,11 +1,12 @@
 /**
  * ⭐ The one file to edit for names, sounds and colors. ⭐
  *
- * - name:  shown to screen readers and in the small "coming soon" bubble.
- * - sound: a file inside `public/sounds/` (MP3, M4A, WAV, OGG…).
- *          Set to `null` while the recording isn't ready yet – tapping the
- *          person will show a friendly "coming soon" bubble.
+ * - name:  read out by screen readers.
  * - color: the color of this person's arcade button (used for the glow).
+ *
+ * Recordings don't go here: put them in `sounds/person-01/`, `sounds/person-02/`…
+ * (any number per person – each tap plays a random one). A person with no
+ * recordings shows a friendly "coming soon" bubble.
  *
  * Positions – already measured from `public/images/soundboard.jpg`.
  * Only touch these if you change the artwork (open the site with `?debug`
@@ -24,7 +25,6 @@ export const people: PersonConfig[] = [
   {
     id: 1,
     name: 'דמות 1',
-    sound: 'sounds/person-01.mp3',
     color: '#FF7A00',
     row: 0,
     column: 0,
@@ -36,7 +36,6 @@ export const people: PersonConfig[] = [
   {
     id: 2,
     name: 'דמות 2',
-    sound: 'sounds/person-02.mp3',
     color: '#1F6BFF',
     row: 0,
     column: 1,
@@ -48,7 +47,6 @@ export const people: PersonConfig[] = [
   {
     id: 3,
     name: 'דמות 3',
-    sound: 'sounds/person-03.mp3',
     color: '#FF2A2A',
     row: 0,
     column: 2,
@@ -61,7 +59,6 @@ export const people: PersonConfig[] = [
   {
     id: 4,
     name: 'דמות 4',
-    sound: 'sounds/person-04.mp3',
     color: '#FFD000',
     row: 1,
     column: 0,
@@ -73,7 +70,6 @@ export const people: PersonConfig[] = [
   {
     id: 5,
     name: 'דמות 5',
-    sound: 'sounds/person-05.mp3',
     color: '#22D140',
     row: 1,
     column: 1,
@@ -85,7 +81,6 @@ export const people: PersonConfig[] = [
   {
     id: 6,
     name: 'דמות 6',
-    sound: 'sounds/person-06.mp3',
     color: '#FF2D95',
     row: 1,
     column: 2,
@@ -98,7 +93,6 @@ export const people: PersonConfig[] = [
   {
     id: 7,
     name: 'דמות 7',
-    sound: 'sounds/person-07.mp3',
     color: '#8B3DFF',
     row: 2,
     column: 0,
@@ -110,7 +104,6 @@ export const people: PersonConfig[] = [
   {
     id: 8,
     name: 'דמות 8',
-    sound: 'sounds/person-08.mp3',
     color: '#1EA7FF',
     row: 2,
     column: 1,
@@ -122,7 +115,6 @@ export const people: PersonConfig[] = [
   {
     id: 9,
     name: 'דמות 9',
-    sound: 'sounds/person-09.mp3',
     color: '#1FCB4A',
     row: 2,
     column: 2,
@@ -135,7 +127,6 @@ export const people: PersonConfig[] = [
   {
     id: 10,
     name: 'דמות 10',
-    sound: 'sounds/person-10.mp3',
     color: '#FF2233',
     row: 3,
     column: 0,
@@ -147,7 +138,6 @@ export const people: PersonConfig[] = [
   {
     id: 11,
     name: 'דמות 11',
-    sound: 'sounds/person-11.mp3',
     color: '#FFD000',
     row: 3,
     column: 1,
@@ -159,7 +149,6 @@ export const people: PersonConfig[] = [
   {
     id: 12,
     name: 'דמות 12',
-    sound: 'sounds/person-12.mp3',
     color: '#A24BFF',
     row: 3,
     column: 2,

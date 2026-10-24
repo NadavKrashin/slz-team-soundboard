@@ -3,7 +3,7 @@ import { resolvedPeople } from '../config/layout';
 import { AudioController, type PlaybackState } from './AudioController';
 
 /** The single audio controller used by the whole app. */
-export const audio = new AudioController(new Map(resolvedPeople.map((p) => [p.id, p.soundUrl])));
+export const audio = new AudioController(new Map(resolvedPeople.map((p) => [p.id, p.soundUrls])));
 
 /**
  * Subscribe to a slice of the playback state. Return a primitive from the

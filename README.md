@@ -25,39 +25,49 @@ board shows simple colored placeholder buttons.
 
 ## 2. Add the recordings
 
-Drop one audio file per person into `public/sounds/`:
+Each person has a folder in **`sounds/`** at the top of the project. Put as many
+recordings in it as you like:
 
 ```
-public/sounds/
-  person-01.mp3
-  person-02.mp3
-  …
-  person-12.mp3
+sounds/
+  person-01/
+    hello.mp3
+    laugh.mp3
+    goal.m4a
+  person-02/
+    …
+  person-12/
 ```
 
-MP3 works everywhere and is the safest choice. M4A/AAC and WAV also work. If you use
-other file names, update the `sound` field for that person (see below).
+- **Any file names work.** Each tap plays a random clip from that person's folder.
+  Every clip plays once before any repeats, and the same clip never plays twice in a row.
+- MP3 works everywhere and is the safest choice. M4A/AAC, WAV and OGG also work.
+- To add, remove or replace a clip, add or delete files in the folder. No code
+  changes are needed. The next deploy picks them up.
+- A single file named after the person, like `sounds/person-03.mp3`, also counts.
+- A person with no recordings shows a friendly **"הקול בדרך… 🎙️"** (coming soon)
+  bubble when tapped.
 
-People without a file show a friendly **"הקול בדרך… 🎙️"** (coming soon) bubble
-instead of playing anything.
+On GitHub, open a person's folder and use **Add file → Upload files**.
 
-## 3. Names, sounds and colors: one file
+The folder numbers follow the board: left → right, top → bottom (1–3 on the top row,
+10–12 on the bottom row).
 
-Everything about the people lives in **`src/config/people.ts`**:
+## 3. Names and colors
+
+Everything else about the people lives in **`src/config/people.ts`**:
 
 ```ts
-{ id: 1, name: 'דמות 1', sound: 'sounds/person-01.mp3', color: '#FF8C00', row: 0, column: 0 },
+{ id: 1, name: 'דמות 1', color: '#FF7A00', row: 0, column: 0, … },
 ```
 
 | Field    | What it does                                                        |
 | -------- | ------------------------------------------------------------------- |
-| `name`   | The person's name (read out by screen readers, used in the bubble). |
-| `sound`  | File inside `public/`. Use `null` while the recording isn't ready.  |
+| `name`   | The person's name (read out by screen readers).                     |
 | `color`  | Color of their arcade button. Used for the glow and waves.          |
 | `row`, `column` | Their spot in the 3 × 4 grid (0-based).                      |
 
-To replace a recording, overwrite the file with a new one of the same name. No code
-changes are needed.
+The `id` connects a person to their recordings folder: `id: 1` → `sounds/person-01/`.
 
 ## 4. Line up the tappable areas
 
@@ -78,7 +88,7 @@ All positions are **percentages of the image**, so they stay aligned on every sc
 
   ```ts
   {
-    id: 5, name: '…', sound: '…', color: '#27AE60', row: 1, column: 1,
+    id: 5, name: '…', color: '#27AE60', row: 1, column: 1,
     region: { x: 35, y: 27, w: 31, h: 24 },   // tappable box, % of the image
     button: { cx: 50, cy: 82, rx: 42, ry: 14 }, // arcade button, % of the box
     head:   { cx: 48, cy: 35, r: 22 },          // face, % of the box
@@ -125,7 +135,9 @@ is no client-side routing, so GitHub Pages needs no special 404 fallback.
 
 | File                                | Responsibility                                                                 |
 | ----------------------------------- | ------------------------------------------------------------------------------ |
-| `src/config/people.ts`              | Names, sounds, colors (the file you'll edit most).                             |
+| `sounds/person-XX/`                 | Each person's recordings.                                                      |
+| `src/config/people.ts`              | Names, colors and positions.                                                   |
+| `src/config/sounds.ts`              | Finds the recordings in `sounds/` when the site is built.                      |
 | `src/config/layout.ts`              | Image path/size, grid margins, default button/face shapes.                     |
 | `src/audio/AudioController.ts`      | The single audio engine: preload, play, stop, live loudness.                   |
 | `src/audio/playback.ts`             | Shares playback state with React.                                              |
@@ -140,9 +152,10 @@ into its own layer, aligned to the pixel, with soft edges. That layer is what si
 squashes and springs back. At rest it's hidden, so you always see the original,
 untouched image.
 
-**Audio.** All clips are downloaded and decoded in the background when the page
-opens. A tap starts playback within milliseconds. Only one clip plays at a time.
-Tapping someone else stops the current clip. Tapping the same person restarts theirs.
+**Audio.** Each person's next clip is downloaded and decoded in the background
+before it's needed, so a tap starts playback within milliseconds. Only one clip plays
+at a time. Tapping someone else stops the current clip. Tapping the same person again
+stops it and plays their next clip.
 Nothing plays until the first tap, as browsers require. On iOS 17+ sounds play even
 when the phone's silent switch is on.
 

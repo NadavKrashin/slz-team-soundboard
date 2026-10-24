@@ -1,8 +1,11 @@
 /**
  * One audio controller for the whole app.
  *
- * - Uses the Web Audio API: every clip is fetched + decoded up front, so a
+ * - Uses the Web Audio API: clips are fetched + decoded ahead of time, so a
  *   tap starts playback within a few milliseconds (no <audio> start-up lag).
+ * - A person can have many clips. Each tap plays the next one from a shuffled
+ *   "bag": every clip plays once before any repeats, and the same clip never
+ *   plays twice in a row. The upcoming clip is always preloaded.
  * - Only one clip plays at a time. Every `play()` gets a token; anything that
  *   finishes loading for an older token is ignored, so rapid taps can never
  *   race each other.
@@ -35,15 +38,19 @@ export class AudioController {
   private ctx: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
   private source: AudioBufferSourceNode | null = null;
-  private readonly cache = new Map<number, Promise<LoadResult>>();
+  /** Decoded clips by URL. */
+  private readonly cache = new Map<string, Promise<LoadResult>>();
+  /** Per person: clips still to play in this round, in shuffled order. */
+  private readonly bags = new Map<number, string[]>();
+  private readonly lastPlayed = new Map<number, string>();
   private readonly listeners = new Set<() => void>();
   private state: PlaybackState = { activeId: null, phase: 'idle', nonce: 0 };
   private token = 0;
   private noticeTimer: ReturnType<typeof setTimeout> | undefined;
   private freq: Uint8Array<ArrayBuffer> | null = null;
-  private readonly sounds: ReadonlyMap<number, string | null>;
+  private readonly sounds: ReadonlyMap<number, readonly string[]>;
 
-  constructor(sounds: ReadonlyMap<number, string | null>) {
+  constructor(sounds: ReadonlyMap<number, readonly string[]>) {
     this.sounds = sounds;
     // iOS 17+: play through the silent switch, like a media app.
     const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
@@ -108,40 +115,65 @@ export class AudioController {
 
   // ── loading ───────────────────────────────────────────────
 
-  private load(id: number): Promise<LoadResult> {
-    const cached = this.cache.get(id);
+  private load(url: string): Promise<LoadResult> {
+    const cached = this.cache.get(url);
     if (cached) return cached;
-    const url = this.sounds.get(id);
     const ctx = this.context();
-    let promise: Promise<LoadResult>;
-    if (!url) {
-      promise = Promise.resolve('missing');
-    } else if (!ctx) {
-      promise = Promise.resolve('error');
-    } else {
-      promise = fetch(url)
-        .then(async (res): Promise<LoadResult> => {
-          // A missing file can come back as a 404, or as the site's HTML page.
-          const type = res.headers.get('content-type') ?? '';
-          if (!res.ok || type.startsWith('text/')) return 'missing';
-          const data = await res.arrayBuffer();
-          if (data.byteLength === 0) return 'missing';
-          return new Promise<LoadResult>((resolve) =>
-            // Callback form: works on every Safari version.
-            ctx.decodeAudioData(data, resolve, () => resolve('error')),
-          );
-        })
-        .catch((): LoadResult => 'error');
-      // Allow a retry later if it was a network/decoding hiccup.
-      promise.then((r) => r === 'error' && this.cache.delete(id));
-    }
-    this.cache.set(id, promise);
+    const promise: Promise<LoadResult> = !ctx
+      ? Promise.resolve('error')
+      : fetch(url)
+          .then(async (res): Promise<LoadResult> => {
+            // A missing file can come back as a 404, or as the site's HTML page.
+            const type = res.headers.get('content-type') ?? '';
+            if (!res.ok || type.startsWith('text/')) return 'missing';
+            const data = await res.arrayBuffer();
+            if (data.byteLength === 0) return 'missing';
+            return new Promise<LoadResult>((resolve) =>
+              // Callback form: works on every Safari version.
+              ctx.decodeAudioData(data, resolve, () => resolve('error')),
+            );
+          })
+          .catch((): LoadResult => 'error');
+    // Allow a retry later if it was a network/decoding hiccup.
+    promise.then((r) => r === 'error' && this.cache.delete(url));
+    this.cache.set(url, promise);
     return promise;
   }
 
-  /** Fetch + decode every clip in the background so taps are instant. */
+  /** The clip this person will play on their next tap (null = no clips yet). */
+  private peek(id: number): string | null {
+    const clips = this.sounds.get(id) ?? [];
+    if (clips.length === 0) return null;
+    let bag = this.bags.get(id);
+    if (!bag?.length) {
+      bag = [...clips];
+      // Fisher–Yates shuffle.
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [bag[i], bag[j]] = [bag[j], bag[i]];
+      }
+      // Never start a new round with the clip that just played.
+      if (bag.length > 1 && bag[0] === this.lastPlayed.get(id)) bag.push(bag.shift()!);
+      this.bags.set(id, bag);
+    }
+    return bag[0];
+  }
+
+  private take(id: number): string | null {
+    const url = this.peek(id);
+    if (url) {
+      this.bags.get(id)!.shift();
+      this.lastPlayed.set(id, url);
+    }
+    return url;
+  }
+
+  /** Fetch + decode everyone's next clip in the background so taps are instant. */
   preloadAll() {
-    for (const id of this.sounds.keys()) this.load(id);
+    for (const id of this.sounds.keys()) {
+      const url = this.peek(id);
+      if (url) this.load(url);
+    }
   }
 
   // ── playback ──────────────────────────────────────────────
@@ -153,7 +185,11 @@ export class AudioController {
     clearTimeout(this.noticeTimer);
     this.set({ activeId: id, phase: 'loading' }, true);
 
-    this.load(id).then((result) => {
+    const url = this.take(id);
+    const next = this.peek(id);
+    if (next && next !== url) this.load(next); // get the following clip ready
+
+    (url ? this.load(url) : Promise.resolve<LoadResult>('missing')).then((result) => {
       if (token !== this.token) return; // a newer tap won
       if (result === 'missing' || result === 'error') {
         this.set({ activeId: id, phase: result });
